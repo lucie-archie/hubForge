@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HubForge - Tableau de Bord</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { background: #040209; }
+    .text-neon-purple { text-shadow: 0 0 10px rgba(167, 139, 250, 0.5); color: #a78bfa; }
+    .card-cyber { background: rgba(22, 25, 37, 0.6); border: 1px solid rgba(88, 80, 236, 0.1); backdrop-filter: blur(12px); }
+    .btn-neon-purple { background-color: #5850ec; color: #ffffff; box-shadow: 0 4px 12px rgba(88, 80, 236, 0.3); }
+    .btn-neon-purple:hover { background-color: #4f46e5; box-shadow: 0 0 20px rgba(88, 80, 236, 0.5); }
+  </style>
+</head>
+<body class="text-gray-300 font-sans min-h-screen overflow-x-hidden box-border">
+
+  <nav class="border-b border-indigo-950/40 bg-[#020204]/90 backdrop-blur-md fixed top-0 w-full z-40 px-4 sm:px-6 py-4 flex justify-between items-center box-border">
+    <div class="flex items-center gap-2 font-black text-lg sm:text-xl text-white tracking-wider flex-shrink-0">
+      <div class="p-2 bg-indigo-500/10 rounded-lg text-indigo-400 border border-indigo-500/20"><i data-lucide="layers" class="w-5 h-5"></i></div>
+      HUB<span class="text-neon-purple">FORGE</span>
+    </div>
+    <button onclick="handleLogout()" class="text-xs font-semibold text-gray-400 hover:text-red-400 flex items-center gap-1.5 transition-colors cursor-pointer">
+      <i data-lucide="log-out" class="w-4 h-4"></i> <span>Déconnexion</span>
+    </button>
+  </nav>
+
+  <main id="dashboard-content" class="pt-28 px-4 max-w-6xl mx-auto box-border pb-12 hidden">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <div>
+        <h1 class="text-2xl font-black text-white tracking-wide">Mon Espace</h1>
+        <p class="text-xs text-gray-400 mt-1" id="user-email">Chargement...</p>
+      </div>
+      <div id="badge-status" class="px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-gray-900 border border-gray-800 text-gray-400">
+        Vérification...
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="card-cyber p-6 rounded-2xl col-span-1 md:col-span-2">
+        <h3 class="text-white font-bold text-sm mb-4 uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="layout" class="w-4 h-4 text-indigo-400"></i> Vos Outils Actifs
+        </h3>
+        <div class="p-8 text-center border border-dashed border-indigo-950/60 rounded-xl">
+          <p class="text-xs text-gray-500">Aucun module configuré pour l'instant.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="payment-overlay" class="fixed inset-0 bg-[#040209]/95 backdrop-blur-md z-50 flex items-center justify-center p-4 box-border hidden">
+    <div class="w-full max-w-sm card-cyber p-6 sm:p-8 rounded-2xl text-center border-neon-purple">
+      <h2 class="text-lg font-black text-white mb-2">Finalisez votre abonnement</h2>
+      <p class="text-xs text-gray-400 mb-6">Accès Premium requis pour ce module.</p>
+      <button class="w-full btn-neon-purple py-3.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider mb-3 cursor-pointer">Payer 9,99 €</button>
+      <a href="main.html" class="block text-xs text-gray-500">Retour</a>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+    const SUPABASE_URL = "https://ksqgxnfvqvyseivwzgaf.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_CVVb_9oBaayoatvTLmLDbg_xVlNP3he";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function checkUser() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { window.location.href = 'auth.html'; return; }
+
+      document.getElementById('user-email').innerText = session.user.email;
+
+      const { data: profile } = await supabaseClient.from('profiles').select('status').eq('id', session.user.id).single();
+      const badge = document.getElementById('badge-status');
+      const statusValue = profile ? profile.status : 'Membre Gratuit';
+
+      if (statusValue === 'Premium Actif') {
+        badge.innerText = 'Premium';
+        document.getElementById('dashboard-content').classList.remove('hidden');
+      } else {
+        const params = new URLSearchParams(window.location.search);
+        if(params.get('plan') === 'premium') {
+          document.getElementById('payment-overlay').classList.remove('hidden');
+        } else {
+          badge.innerText = 'Gratuit';
+          document.getElementById('dashboard-content').classList.remove('hidden');
+        }
+      }
+    }
+
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+      window.location.href = 'main.html';
+    }
+    checkUser();
+  </script>
+</body>
+</html>
