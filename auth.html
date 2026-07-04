@@ -11,7 +11,7 @@
     body { background: radial-gradient(circle at center, #090514 0%, #020204 100%); }
     .text-neon-purple { text-shadow: 0 0 10px rgba(167, 139, 250, 0.6); color: #a78bfa; }
     .btn-neon-purple { background-color: #5850ec; color: #ffffff; box-shadow: 0 4px 12px rgba(88, 80, 236, 0.3); transition: all 0.3s ease; }
-    .btn-neon-purple:hover { background-color: #4f46e5; box-shadow: 0 0 20px rgba(88, 80, 236, 0.6); transform: translateY(-1px); }
+    .btn-neon-purple:hover { background-color: #4f46e5; box-shadow: 0 0 20px rgba(88, 80, 236, 0.6); }
     .input-dark-neon { background-color: #161925; border: 1px solid #23283e; }
     .input-dark-neon:focus-within { border-color: #5850ec; box-shadow: 0 0 10px rgba(88, 80, 236, 0.2); }
     .tab-active { color: #ffffff; border-bottom: 2px solid #5850ec; }
@@ -21,9 +21,7 @@
 
   <div class="w-full max-w-md bg-[#110d21]/60 border border-indigo-950/40 rounded-2xl p-6 sm:p-8 backdrop-blur-md shadow-2xl box-border">
     <div class="flex items-center justify-center gap-2 font-black text-xl text-white tracking-wider mb-8">
-      <div class="p-2 bg-indigo-500/10 rounded-lg text-indigo-400 border border-indigo-500/20">
-        <i data-lucide="layers" class="w-5 h-5"></i>
-      </div>
+      <div class="p-2 bg-indigo-500/10 rounded-lg text-indigo-400 border border-indigo-500/20"><i data-lucide="layers" class="w-5 h-5"></i></div>
       HUB<span class="text-neon-purple">FORGE</span>
     </div>
 
@@ -59,17 +57,14 @@
   <script>
     lucide.createIcons();
 
-    // Configuration d'accès Supabase
     const SUPABASE_URL = "https://ksqgxnfvqvyseivwzgaf.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_CVVb_9oBaayoatvTLmLDbg_xVlNP3he";
-    
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let mode = 'login';
     const params = new URLSearchParams(window.location.search);
     const chosenPlan = params.get('plan') || 'free';
 
-    // Basculer entre Connexion et Inscription
     function switchTab(target) {
       mode = target;
       document.getElementById('tab-login').classList.toggle('tab-active', target === 'login');
@@ -78,38 +73,25 @@
       document.getElementById('forgot-link').style.display = target === 'login' ? 'block' : 'none';
     }
 
-    // Gestion de la soumission
     document.getElementById('auth-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
 
-      if (!email || !password) { 
-        alert("Veuillez remplir tous les champs."); 
-        return; 
-      }
+      if (!email || !password) { alert("Champs vides."); return; }
 
       if (mode === 'login') {
-        // Mode Connexion
-        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (error) { 
-          alert("Erreur : " + error.message); 
-        } else { 
-          // Redirection vers le tableau de bord
-          window.location.href = `dashboard.html?plan=${chosenPlan}`; 
-        }
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) { alert("Erreur : " + error.message); } 
+        else { window.location.href = `dashboard.html?plan=${chosenPlan}`; }
       } else {
-        // Mode Inscription
-        const { data, error } = await supabaseClient.auth.signUp({
+        const { error } = await supabaseClient.auth.signUp({
           email,
           password,
           options: { data: { plan_initial: chosenPlan } }
         });
-        if (error) { 
-          alert("Erreur : " + error.message); 
-        } else { 
-          alert("✓ Inscription réussie ! Un e-mail de confirmation vous a été envoyé."); 
-        }
+        if (error) { alert("Erreur : " + error.message); } 
+        else { alert("✓ Profil initié ! Validez l'e-mail de confirmation reçu."); }
       }
     });
   </script>
