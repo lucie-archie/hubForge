@@ -22,7 +22,7 @@
       <div class="p-2 bg-indigo-500/10 rounded-lg text-indigo-400 border border-indigo-500/20"><i data-lucide="layers" class="w-5 h-5"></i></div>
       HUB<span class="text-neon-purple">FORGE</span>
     </div>
-    <button onclick="handleLogout()" class="text-xs font-semibold text-gray-400 hover:text-red-400 flex items-center gap-1.5 transition-colors cursor-pointer">
+    <button onclick="handleLogout()" class="text-xs font-semibold text-gray-400 hover:text-red-400 flex items-center gap-1.5 transition-colors cursor-pointer bg-transparent border-0">
       <i data-lucide="log-out" class="w-4 h-4"></i> <span>Déconnexion</span>
     </button>
   </nav>
@@ -31,7 +31,7 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
       <div>
         <h1 class="text-2xl font-black text-white tracking-wide">Mon Espace</h1>
-        <p class="text-xs text-gray-400 mt-1" id="user-email">Chargement...</p>
+        <p class="text-xs text-gray-400 mt-1" id="user-email">Validation de session...</p>
       </div>
       <div id="badge-status" class="px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-gray-900 border border-gray-800 text-gray-400">
         Vérification...
@@ -44,23 +44,35 @@
           <i data-lucide="layout" class="w-4 h-4 text-indigo-400"></i> Vos Outils Actifs
         </h3>
         <div class="p-8 text-center border border-dashed border-indigo-950/60 rounded-xl">
-          <p class="text-xs text-gray-500">Aucun module configuré pour l'instant.</p>
+          <p class="text-xs text-gray-500">Aucun module configuré pour l'instant. Votre espace Forge est opérationnel.</p>
+        </div>
+      </div>
+      
+      <div class="card-cyber p-6 rounded-2xl">
+        <h3 class="text-white font-bold text-sm mb-4 uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="activity" class="w-4 h-4 text-indigo-400"></i> État des Systèmes
+        </h3>
+        <div class="space-y-3 text-xs">
+          <div class="flex justify-between py-2 border-b border-indigo-950/30"><span class="text-gray-500">Stockage API</span><span>0 / 5 Go</span></div>
+          <div class="flex justify-between py-2 border-b border-indigo-950/30"><span class="text-gray-500">Réseau Cloud</span><span class="text-emerald-400 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Opérationnel</span></div>
         </div>
       </div>
     </div>
   </main>
 
   <div id="payment-overlay" class="fixed inset-0 bg-[#040209]/95 backdrop-blur-md z-50 flex items-center justify-center p-4 box-border hidden">
-    <div class="w-full max-w-sm card-cyber p-6 sm:p-8 rounded-2xl text-center border-neon-purple">
-      <h2 class="text-lg font-black text-white mb-2">Finalisez votre abonnement</h2>
-      <p class="text-xs text-gray-400 mb-6">Accès Premium requis pour ce module.</p>
-      <button class="w-full btn-neon-purple py-3.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider mb-3 cursor-pointer">Payer 9,99 €</button>
-      <a href="main.html" class="block text-xs text-gray-500">Retour</a>
+    <div class="w-full max-w-sm card-cyber p-6 sm:p-8 rounded-2xl text-center">
+      <div class="w-12 h-12 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="credit-card" class="w-6 h-6"></i></div>
+      <h2 class="text-lg font-black text-white mb-2">Activez votre offre Premium</h2>
+      <p class="text-xs text-gray-400 mb-6 leading-relaxed">Pour valider l'accès complet et automatiser vos passerelles de paiement, complétez le règlement requis.</p>
+      <button class="w-full btn-neon-purple py-3.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider mb-3 cursor-pointer border-0">Payer 9,99 € par Carte / Crypto</button>
+      <a href="main.html" class="block text-xs text-gray-500 hover:text-gray-400">Retour à la vitrine</a>
     </div>
   </div>
 
   <script>
     lucide.createIcons();
+
     const SUPABASE_URL = "https://ksqgxnfvqvyseivwzgaf.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_CVVb_9oBaayoatvTLmLDbg_xVlNP3he";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -77,6 +89,7 @@
 
       if (statusValue === 'Premium Actif') {
         badge.innerText = 'Premium';
+        badge.className = "px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-indigo-500/10 border border-indigo-500/30 text-indigo-400";
         document.getElementById('dashboard-content').classList.remove('hidden');
       } else {
         const params = new URLSearchParams(window.location.search);
@@ -84,6 +97,7 @@
           document.getElementById('payment-overlay').classList.remove('hidden');
         } else {
           badge.innerText = 'Gratuit';
+          badge.className = "px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-gray-900 border border-gray-800 text-gray-400";
           document.getElementById('dashboard-content').classList.remove('hidden');
         }
       }
@@ -93,6 +107,7 @@
       await supabaseClient.auth.signOut();
       window.location.href = 'main.html';
     }
+
     checkUser();
   </script>
 </body>
