@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HubForge - Authentification</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { background: radial-gradient(circle at center, #090514 0%, #020204 100%); }
+    .text-neon-purple { text-shadow: 0 0 10px rgba(167, 139, 250, 0.6); color: #a78bfa; }
+    .btn-neon-purple { background-color: #5850ec; color: #ffffff; box-shadow: 0 4px 12px rgba(88, 80, 236, 0.3); transition: all 0.3s ease; }
+    .btn-neon-purple:hover { background-color: #4f46e5; box-shadow: 0 0 20px rgba(88, 80, 236, 0.6); transform: translateY(-1px); }
+    .input-dark-neon { background-color: #161925; border: 1px solid #23283e; }
+    .input-dark-neon:focus-within { border-color: #5850ec; box-shadow: 0 0 10px rgba(88, 80, 236, 0.2); }
+    .tab-active { color: #ffffff; border-bottom: 2px solid #5850ec; }
+  </style>
+</head>
+<body class="text-gray-300 font-sans min-h-screen flex items-center justify-center p-4 overflow-x-hidden box-border">
+
+  <div class="w-full max-w-md bg-[#110d21]/60 border border-indigo-950/40 rounded-2xl p-6 sm:p-8 backdrop-blur-md shadow-2xl box-border">
+    <div class="flex items-center justify-center gap-2 font-black text-xl text-white tracking-wider mb-8">
+      <div class="p-2 bg-indigo-500/10 rounded-lg text-indigo-400 border border-indigo-500/20">
+        <i data-lucide="layers" class="w-5 h-5"></i>
+      </div>
+      HUB<span class="text-neon-purple">FORGE</span>
+    </div>
+
+    <div class="flex border-b border-indigo-950/60 mb-6 text-sm font-semibold text-gray-500">
+      <button id="tab-login" class="flex-1 pb-3 text-center tab-active cursor-pointer" onclick="switchTab('login')">Connexion</button>
+      <button id="tab-register" class="flex-1 pb-3 text-center cursor-pointer" onclick="switchTab('register')">Inscription</button>
+    </div>
+
+    <form id="auth-form" class="space-y-5" novalidate>
+      <div>
+        <label class="block text-xs font-semibold text-gray-400 mb-2">Adresse E-mail</label>
+        <div class="relative flex items-center input-dark-neon rounded-xl">
+          <input type="email" id="email" required class="w-full bg-transparent py-3.5 px-4 text-sm text-white focus:outline-none" placeholder="nom@exemple.com">
+        </div>
+      </div>
+
+      <div>
+        <div class="flex justify-between items-center mb-2">
+          <label class="block text-xs font-semibold text-gray-400">Mot de passe</label>
+          <a href="reset-password.html" id="forgot-link" class="text-[11px] text-indigo-400 hover:underline">Oublié ?</a>
+        </div>
+        <div class="relative flex items-center input-dark-neon rounded-xl">
+          <input type="password" id="password" required class="w-full bg-transparent py-3.5 px-4 text-sm text-white focus:outline-none" placeholder="••••••••">
+        </div>
+      </div>
+
+      <button type="submit" id="submit-btn" class="w-full btn-neon-purple py-3.5 px-4 rounded-xl text-sm font-bold tracking-wider uppercase cursor-pointer">
+        Se connecter
+      </button>
+    </form>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    const SUPABASE_URL = "https://ksqgxnfvqvyseivwzgaf.supabase.co";
+    // Ta clé publique réparée et complète à 100% :
+    const SUPABASE_ANON_KEY = "sb_publishable_CVVb_9oBaayoatvTLmLDbg_xVlNP3he";
+    
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let mode = 'login';
+    const params = new URLSearchParams(window.location.search);
+    const chosenPlan = params.get('plan') || 'free';
+
+    function switchTab(target) {
+      mode = target;
+      document.getElementById('tab-login').classList.toggle('tab-active', target === 'login');
+      document.getElementById('tab-register').classList.toggle('tab-active', target === 'register');
+      document.getElementById('submit-btn').innerText = target === 'login' ? 'Se connecter' : 'Créer mon compte';
+      document.getElementById('forgot-link').style.display = target === 'login' ? 'block' : 'none';
+    }
+
+    document.getElementById('auth-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      if (!email || !password) { alert("Veuillez remplir tous les champs."); return; }
+
+      if (mode === 'login') {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) { alert("Erreur : " + error.message); } 
+        else { window.location.href = `index.html?plan=${chosenPlan}`; }
+      } else {
+        const { data, error } = await supabaseClient.auth.signUp({
+          email,
+          password,
+          options: { data: { plan_initial: chosenPlan } }
+        });
+        if (error) { alert("Erreur : " + error.message); } 
+        else { alert("✓ Inscription réussie ! Vérifiez votre boîte mail pour confirmer votre compte."); }
+      }
+    });
+  </script>
+</body>
+</html>
