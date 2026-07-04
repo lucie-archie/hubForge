@@ -3,203 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HubForge - Accueil</title>
+  <title>HubForge - Centralisez vos outils</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
-  
   <style>
-    body {
-      background: radial-gradient(circle at center, #090514 0%, #020204 100%);
-    }
-
-    /* Effet Néon Violet Lumineux */
-    .text-neon-purple {
-      color: #a78bfa;
-      text-shadow: 0 0 10px rgba(167, 139, 250, 0.6),
-                   0 0 20px rgba(139, 92, 246, 0.4);
-    }
-
-    .border-neon-purple {
-      border: 1px solid #6d28d9;
-      box-shadow: 0 0 20px rgba(109, 40, 217, 0.3);
-    }
-
-    .btn-neon-purple {
-      background-color: #5850ec;
-      color: #ffffff;
-      box-shadow: 0 4px 15px rgba(88, 80, 236, 0.4);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .btn-neon-purple:hover {
-      background-color: #4f46e5;
-      box-shadow: 0 0 25px rgba(88, 80, 236, 0.7);
-      transform: translateY(-2px);
-    }
-
-    .card-cyber {
-      background: rgba(22, 25, 37, 0.7);
-      border: 1px solid rgba(88, 80, 236, 0.15);
-      backdrop-filter: blur(8px);
-      transition: all 0.3s ease;
-    }
-
-    .card-cyber:hover {
-      border-color: #5850ec;
-      box-shadow: 0 0 25px rgba(88, 80, 236, 0.3);
-      transform: translateY(-4px);
-    }
+    body { background: #020204; }
+    .text-neon-purple { text-shadow: 0 0 10px rgba(167, 139, 250, 0.5); color: #a78bfa; }
+    .card-cyber { background: rgba(17, 13, 33, 0.5); border: 1px solid rgba(88, 80, 236, 0.1); backdrop-filter: blur(12px); }
+    .btn-neon { background-color: #5850ec; color: #ffffff; box-shadow: 0 4px 14px rgba(88, 80, 236, 0.4); transition: all 0.3s ease; }
+    .btn-neon:hover { background-color: #4f46e5; box-shadow: 0 0 20px rgba(88, 80, 236, 0.6); }
   </style>
 </head>
-<body class="text-gray-300 font-sans min-h-screen antialiased overflow-x-hidden">
+<body class="text-gray-300 font-sans min-h-screen box-border">
 
-  <nav class="border-b border-indigo-950/40 bg-[#020204]/90 backdrop-blur-md fixed top-0 w-full z-50 px-4 sm:px-6 py-4 flex justify-between items-center box-border">
-    <div class="flex items-center gap-2 font-black text-lg sm:text-xl text-white tracking-wider flex-shrink-0">
-      <div class="p-2 bg-indigo-500/10 rounded-lg text-indigo-400 border border-indigo-500/20">
-        <i data-lucide="layers" class="w-5 h-5"></i>
-      </div>
+  <nav class="fixed top-0 w-full z-50 border-b border-indigo-950/40 bg-[#020204]/80 backdrop-blur-md px-6 py-4 flex justify-between items-center box-border">
+    <div class="flex items-center gap-2 font-black text-xl text-white tracking-wider">
+      <div class="p-2 bg-indigo-500/10 rounded-lg text-indigo-400 border border-indigo-500/20"><i data-lucide="layers" class="w-5 h-5"></i></div>
       HUB<span class="text-neon-purple">FORGE</span>
     </div>
-    <div class="flex items-center gap-3 sm:gap-5 flex-shrink-0">
-      <a href="auth.html" class="text-xs sm:text-sm font-semibold text-gray-400 hover:text-white transition-colors">Connexion</a>
-      <a href="auth.html?plan=free" class="btn-neon-purple text-[10px] sm:text-xs font-bold uppercase tracking-wider px-4 sm:px-5 py-2.5 rounded-xl">Débuter</a>
-    </div>
+    <a href="auth.html?plan=free" class="text-xs font-bold text-white uppercase tracking-wider bg-indigo-950/60 border border-indigo-900/50 px-4 py-2 rounded-xl hover:bg-indigo-900/40 transition-all">Connexion</a>
   </nav>
 
-  <section class="pt-32 pb-16 px-4 max-w-5xl mx-auto text-center box-border">
-    <div class="inline-flex items-center gap-2 bg-indigo-950/60 border border-indigo-500/30 rounded-full px-4 py-1.5 text-xs font-semibold text-indigo-300 mb-8">
-      <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span> Plateforme Ouverte à Tous
-    </div>
-    <h1 class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white mb-6 leading-tight">
-      Centralisez tous vos services <br><span class="text-neon-purple">en un seul endroit.</span>
-    </h1>
-    <p class="text-gray-400 max-w-xl mx-auto text-xs sm:text-sm md:text-base mb-10 leading-relaxed">
-      Gérez vos outils quotidiens, accédez à des configurations automatisées et optimisez vos applications via une interface épurée, pensée pour les particuliers et les professionnels.
-    </p>
-    <div class="flex justify-center w-full">
-      <a href="#pricing" class="w-full sm:w-auto btn-neon-purple text-xs sm:text-sm px-8 py-4 rounded-xl flex items-center justify-center gap-2 max-w-xs">
-        <span>Découvrir les Tarifs</span> <i data-lucide="chevron-down" class="w-4 h-4"></i>
-      </a>
-    </div>
-  </section>
-
-  <section class="py-10 px-4 max-w-5xl mx-auto grid grid-cols-3 gap-2 sm:gap-6 text-center border-y border-indigo-950/40 my-8">
-    <div>
-      <div class="text-xl sm:text-3xl font-black text-white">+10k</div>
-      <div class="text-[10px] sm:text-xs text-gray-500 uppercase tracking-wider mt-1">Utilisateurs</div>
-    </div>
-    <div>
-      <div class="text-xl sm:text-3xl font-black text-white">99.9%</div>
-      <div class="text-[10px] sm:text-xs text-gray-500 uppercase tracking-wider mt-1">Disponibilité</div>
-    </div>
-    <div>
-      <div class="text-xl sm:text-3xl font-black text-white">24/7</div>
-      <div class="text-[10px] sm:text-xs text-gray-500 uppercase tracking-wider mt-1">Support Client</div>
-    </div>
-  </section>
-
-  <section class="py-12 px-4 max-w-5xl mx-auto box-border">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="card-cyber p-6 rounded-2xl">
-        <div class="w-10 h-10 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-xl flex items-center justify-center mb-4">
-          <i data-lucide="smile" class="w-5 h-5"></i>
-        </div>
-        <h3 class="text-white font-bold mb-2">Simple et Accessible</h3>
-        <p class="text-xs text-gray-400 leading-relaxed">Aucune compétence technique requise. Tout se pilote à la souris et au doigt de manière intuitive.</p>
-      </div>
-      <div class="card-cyber p-6 rounded-2xl">
-        <div class="w-10 h-10 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-xl flex items-center justify-center mb-4">
-          <i data-lucide="shield" class="w-5 h-5"></i>
-        </div>
-        <h3 class="text-white font-bold mb-2">Sécurité Maximale</h3>
-        <p class="text-xs text-gray-400 leading-relaxed">Vos informations personnelles et transactions profitent d'un chiffrement complet de bout en bout.</p>
-      </div>
-      <div class="card-cyber p-6 rounded-2xl">
-        <div class="w-10 h-10 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-xl flex items-center justify-center mb-4">
-          <i data-lucide="globe" class="w-5 h-5"></i>
-        </div>
-        <h3 class="text-white font-bold mb-2">Accès Partout</h3>
-        <p class="text-xs text-gray-400 leading-relaxed">Connectez-vous depuis votre smartphone, tablette ou ordinateur n'importe où dans le monde.</p>
-      </div>
-    </div>
-  </section>
-
-  <section id="pricing" class="py-16 px-4 max-w-4xl mx-auto box-border">
-    <div class="text-center mb-12">
-      <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-3">Abonnements Clairs</h2>
-      <p class="text-xs text-gray-400">Trouvez la formule idéale pour débloquer toutes vos fonctionnalités.</p>
-    </div>
+  <main class="pt-32 px-4 max-w-4xl mx-auto text-center box-border">
+    <span class="text-[10px] font-black tracking-widest text-indigo-400 uppercase bg-indigo-500/10 border border-indigo-500/20 px-3 py-1.5 rounded-full shadow-[0_0_15px_rgba(88,80,236,0.15)]">L'écosystème nouvelle génération</span>
+    <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight mt-6 mb-4 leading-tight">Forgez vos applications<br>sans limites</h1>
+    <p class="text-sm text-gray-400 max-w-xl mx-auto leading-relaxed mb-8">Centralisez vos micro-services, gérez vos abonnements clients et automatisez vos tunnels de vente sur une seule interface cyber-sécurisée.</p>
     
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
-      <div class="card-cyber p-6 sm:p-8 rounded-2xl flex flex-col justify-between">
-        <div class="mb-6">
-          <h3 class="text-white font-bold text-lg mb-1">Membre Gratuit</h3>
-          <p class="text-xs text-gray-500 mb-6">Découvrez notre interface sans frais</p>
-          <div class="text-3xl sm:text-4xl font-black text-white mb-6">0 € <span class="text-xs text-gray-500 font-normal">/ mois</span></div>
-          <ul class="space-y-3 text-xs text-gray-400">
-            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-indigo-400"></i> Accès aux modules standards</li>
-            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-indigo-400"></i> Stockage basique inclus</li>
-            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-indigo-400"></i> Support par e-mail standard</li>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto mt-12 text-left box-border">
+      <div class="card-cyber p-6 rounded-2xl flex flex-col justify-between">
+        <div>
+          <h3 class="text-white font-bold text-base">Plan Standard</h3>
+          <p class="text-xs text-gray-500 mt-1">Découvrez la puissance de base.</p>
+          <div class="text-2xl font-black text-white my-4">0 € <span class="text-xs font-normal text-gray-500">/ permanent</span></div>
+          <ul class="space-y-2 text-xs text-gray-400 mb-6">
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> 1 Projet actif</li>
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Outils communautaires</li>
           </ul>
         </div>
-        <a href="auth.html?plan=free" class="w-full text-center bg-indigo-950/20 hover:bg-indigo-900/40 text-indigo-400 border border-indigo-500/30 py-3.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase transition-all box-border">Choisir l'offre</a>
+        <a href="auth.html?plan=free" class="block text-center bg-indigo-950/40 hover:bg-indigo-900/30 border border-indigo-900/50 text-white font-bold py-3 px-4 rounded-xl text-xs uppercase tracking-wider transition-colors">Commencer</a>
       </div>
 
-      <div class="card-cyber p-6 sm:p-8 rounded-2xl flex flex-col justify-between border-neon-purple relative bg-[#0d0a1b]/80">
-        <div class="absolute -top-3 right-6 bg-[#5850ec] text-white text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full">
-          Populaire
-        </div>
-        <div class="mb-6">
-          <h3 class="text-white font-bold text-lg mb-1">Premium Actif</h3>
-          <p class="text-xs text-indigo-300/60 mb-6">L'expérience HubForge intégrale</p>
-          <div class="text-3xl sm:text-4xl font-black text-white mb-6">9,99 € <span class="text-xs text-gray-500 font-normal">/ mois</span></div>
-          <ul class="space-y-3 text-xs text-gray-200">
-            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-[#a78bfa]"></i> **Accès prioritaire à tous les outils**</li>
-            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-[#a78bfa]"></i> Aucune limite d'utilisation</li>
-            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-[#a78bfa]"></i> Support client prioritaire 24h/24</li>
-            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-[#a78bfa]"></i> Intégration Crypto incluse</li>
+      <div class="card-cyber p-6 rounded-2xl border-indigo-500/30 relative flex flex-col justify-between shadow-[0_0_30px_rgba(88,80,236,0.05)]">
+        <span class="absolute -top-2.5 right-4 text-[9px] font-black bg-indigo-600 text-white px-2 py-0.5 rounded-full uppercase tracking-wider">Recommandé</span>
+        <div>
+          <h3 class="text-white font-bold text-base flex items-center gap-1.5"><i data-lucide="zap" class="w-4 h-4 text-indigo-400"></i> Plan Premium</h3>
+          <p class="text-xs text-gray-500 mt-1">L'accès complet sans restriction.</p>
+          <div class="text-2xl font-black text-white my-4">9,99 € <span class="text-xs font-normal text-gray-500">/ mois</span></div>
+          <ul class="space-y-2 text-xs text-gray-400 mb-6">
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-indigo-400"></i> Projets illimités</li>
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-indigo-400"></i> Webhooks & API Avancées</li>
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-indigo-400"></i> Support prioritaire 24/7</li>
           </ul>
         </div>
-        <a href="auth.html?plan=premium" class="w-full text-center btn-neon-purple py-3.5 px-4 rounded-xl text-xs font-bold tracking-wider uppercase transition-all box-border">Devenir Premium</a>
+        <a href="auth.html?plan=premium" class="block text-center btn-neon py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-wider text-center">Devenir Premium</a>
       </div>
     </div>
-  </section>
+  </main>
 
-  <section class="py-12 px-4 max-w-3xl mx-auto box-border mb-16">
-    <div class="text-center mb-8">
-      <h2 class="text-2xl font-bold text-white">Questions fréquentes</h2>
-    </div>
-    <div class="space-y-4">
-      <div class="card-cyber p-4 rounded-xl cursor-pointer" onclick="toggleFaq(this)">
-        <div class="flex justify-between items-center">
-          <h4 class="text-sm font-semibold text-white">Comment fonctionne la période d'essai ?</h4>
-          <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform"></i>
-        </div>
-        <p class="text-xs text-gray-400 mt-2 hidden">Vous pouvez utiliser l'offre Gratuit aussi longtemps que vous le souhaitez sans insérer de carte bancaire ou de paiement.</p>
-      </div>
-      <div class="card-cyber p-4 rounded-xl cursor-pointer" onclick="toggleFaq(this)">
-        <div class="flex justify-between items-center">
-          <h4 class="text-sm font-semibold text-white">Puis-je changer d'abonnement plus tard ?</h4>
-          <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform"></i>
-        </div>
-        <p class="text-xs text-gray-400 mt-2 hidden">Absolument. Vous pouvez passer au plan Premium ou repasser au plan Gratuit directement depuis votre espace membre en un clic.</p>
-      </div>
-    </div>
-  </section>
-
-  <script>
-    lucide.createIcons();
-
-    function toggleFaq(element) {
-      const p = element.querySelector('p');
-      const icon = element.querySelector('[data-lucide="chevron-down"]');
-      p.classList.toggle('hidden');
-      if(p.classList.contains('hidden')) {
-        icon.style.transform = 'rotate(0deg)';
-      } else {
-        icon.style.transform = 'rotate(180deg)';
-      }
-    }
-  </script>
+  <script>lucide.createIcons();</script>
 </body>
 </html>
