@@ -59,8 +59,8 @@
   <script>
     lucide.createIcons();
 
+    // Configuration d'accès Supabase
     const SUPABASE_URL = "https://ksqgxnfvqvyseivwzgaf.supabase.co";
-    // Ta clé publique réparée et complète à 100% :
     const SUPABASE_ANON_KEY = "sb_publishable_CVVb_9oBaayoatvTLmLDbg_xVlNP3he";
     
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -69,6 +69,7 @@
     const params = new URLSearchParams(window.location.search);
     const chosenPlan = params.get('plan') || 'free';
 
+    // Basculer entre Connexion et Inscription
     function switchTab(target) {
       mode = target;
       document.getElementById('tab-login').classList.toggle('tab-active', target === 'login');
@@ -77,25 +78,38 @@
       document.getElementById('forgot-link').style.display = target === 'login' ? 'block' : 'none';
     }
 
+    // Gestion de la soumission
     document.getElementById('auth-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('email').value;
+      const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
 
-      if (!email || !password) { alert("Veuillez remplir tous les champs."); return; }
+      if (!email || !password) { 
+        alert("Veuillez remplir tous les champs."); 
+        return; 
+      }
 
       if (mode === 'login') {
+        // Mode Connexion
         const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (error) { alert("Erreur : " + error.message); } 
-        else { window.location.href = `index.html?plan=${chosenPlan}`; }
+        if (error) { 
+          alert("Erreur : " + error.message); 
+        } else { 
+          // Redirection vers le tableau de bord
+          window.location.href = `dashboard.html?plan=${chosenPlan}`; 
+        }
       } else {
+        // Mode Inscription
         const { data, error } = await supabaseClient.auth.signUp({
           email,
           password,
           options: { data: { plan_initial: chosenPlan } }
         });
-        if (error) { alert("Erreur : " + error.message); } 
-        else { alert("✓ Inscription réussie ! Vérifiez votre boîte mail pour confirmer votre compte."); }
+        if (error) { 
+          alert("Erreur : " + error.message); 
+        } else { 
+          alert("✓ Inscription réussie ! Un e-mail de confirmation vous a été envoyé."); 
+        }
       }
     });
   </script>
