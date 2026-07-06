@@ -171,37 +171,43 @@
   </template>
 
   <script>
-    // Configuration réelle de ton projet HubForge
+    // Configuration réelle stockée
     const SUPABASE_URL = "https://ksqgxnfvqvyseivwzgaf.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_CVVb_9oBaayoatvTLmLDbg_xVlNP3he";
 
-    const supabase = genSupabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Utilisation explicite de l'objet global window.supabase fourni par le CDN
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Vérification de sécurité de la Session
     async function checkUserSession() {
-      const { data: { session }, error } = await supabase.auth.getSession();
+      try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
 
-      if (error || !session) {
-        alert("Accès refusé. Veuillez vous connecter.");
-        window.location.href = "auth.html";
-        return;
+        if (error || !session) {
+          alert("Accès refusé. Veuillez vous connecter.");
+          window.location.href = "auth.html";
+          return;
+        }
+
+        // Session valide : Rendre visible et injecter les infos utilisateur
+        document.getElementById('dashboard-body').classList.remove('hidden');
+        document.getElementById('user-display-email').innerText = session.user.email;
+        document.getElementById('user-display-id').innerText = `ID: ${session.user.id.substring(0, 8)}`;
+        
+        switchTab('espace');
+      } catch (err) {
+        console.error("Erreur de session:", err);
       }
-
-      // Session valide : On affiche le dashboard et injecte les infos utilisateur
-      document.getElementById('dashboard-body').classList.remove('hidden');
-      document.getElementById('user-display-email').innerText = session.user.email;
-      document.getElementById('user-display-id').innerText = `ID: ${session.user.id.substring(0, 8)}`;
-      
-      switchTab('espace');
     }
 
     // Gestion de la Déconnexion
     async function handleLogout() {
-      await supabase.auth.signOut();
+      await supabaseClient.auth.signOut();
       window.location.href = "auth.html";
     }
 
     // Routage dynamique par onglets
+    box-border;
     function switchTab(tabId) {
       const container = document.getElementById('dynamic-content');
       const template = document.getElementById(`tpl-${tabId}`);
@@ -251,8 +257,8 @@
       overlay.classList.toggle('hidden', shouldClose);
     }
 
-    // Démarrage du script de garde
-    window.onload = checkUserSession;
+    // Démarrage du script de garde au chargement
+    window.addEventListener('DOMContentLoaded', checkUserSession);
   </script>
 </body>
 </html>
