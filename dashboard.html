@@ -171,11 +171,9 @@
   </template>
 
   <script>
-    // Configuration réelle stockée
     const SUPABASE_URL = "https://ksqgxnfvqvyseivwzgaf.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_CVVb_9oBaayoatvTLmLDbg_xVlNP3he";
 
-    // Utilisation explicite de l'objet global window.supabase fourni par le CDN
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Vérification de sécurité de la Session
@@ -207,7 +205,6 @@
     }
 
     // Routage dynamique par onglets
-    box-border;
     function switchTab(tabId) {
       const container = document.getElementById('dynamic-content');
       const template = document.getElementById(`tpl-${tabId}`);
@@ -229,7 +226,7 @@
 
     // Modale Produits (Mock Data)
     const productDataMock = {
-      video: { title: "Masterclass Game Dev Horror", type: "Vidéo / Stream", price: "29.00 €", description: "TPS horror content flow.", rating: "5.0", stars: "★★★★★", mediaHtml: `<div class="p-6 text-xs text-white">Lecteur Cyber Sécurisé Actif</div>` },
+      video: { title: "Masterclass Game Dev Horror", type: "Vidéo / Stream", price: "29.00 €", description: "TPS horror content flow.", rating: "5.0", stars: "★★★★★", mediaHtml: `<div class="p-6 text-xs text-white">Lecteur Cyber Securise Actif</div>` },
       photo: { title: "Pack Textures Cyber-Neon v4", type: "Asset Graphique", price: "15.00 €", description: "Esthétique violette.", rating: "4.2", stars: "★★★★☆", mediaHtml: `<div class="p-6 text-xs text-white">Aperçu Galerie</div>` }
     };
 
