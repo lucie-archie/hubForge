@@ -176,27 +176,29 @@
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Vérification de sécurité de la Session
-    async function checkUserSession() {
-      try {
-        const { data: { session }, error } = await supabaseClient.auth.getSession();
+    // Écouteur global en temps réel de la session Supabase
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      console.log("Auth Event:", event, "Session active:", !!session);
 
-        if (error || !session) {
-          alert("Accès refusé. Veuillez vous connecter.");
-          window.location.href = "auth.html";
-          return;
-        }
-
-        // Session valide : Rendre visible et injecter les infos utilisateur
+      if (session) {
+        // Session détectée (Authentifié ou redirection d'email réussie)
         document.getElementById('dashboard-body').classList.remove('hidden');
         document.getElementById('user-display-email').innerText = session.user.email;
         document.getElementById('user-display-id').innerText = `ID: ${session.user.id.substring(0, 8)}`;
         
-        switchTab('espace');
-      } catch (err) {
-        console.error("Erreur de session:", err);
+        // Initialise le premier onglet si l'espace est vide
+        if (!document.getElementById('dynamic-content').innerHTML.trim()) {
+          switchTab('espace');
+        }
+      } else {
+        // Si aucun jeton n'est capturé après traitement, retour vers la connexion
+        setTimeout(() => {
+          if (!session) {
+            window.location.href = "auth.html";
+          }
+        }, 500);
       }
-    }
+    });
 
     // Gestion de la Déconnexion
     async function handleLogout() {
@@ -253,9 +255,6 @@
       sidebar.classList.toggle('-translate-x-full', shouldClose);
       overlay.classList.toggle('hidden', shouldClose);
     }
-
-    // Démarrage du script de garde au chargement
-    window.addEventListener('DOMContentLoaded', checkUserSession);
   </script>
 </body>
 </html>
