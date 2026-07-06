@@ -3,28 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HubForge - Tableau de Bord</title>
+  <title>HubForge - Tableau de Bord Premium</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body { background-color: #040209; }
-    .text-neon-purple { text-shadow: 0 0 10px rgba(167, 139, 250, 0.5); color: #a78bfa; }
-    .card-cyber { background: rgba(22, 25, 37, 0.6); border: 1px solid rgba(88, 80, 236, 0.1); backdrop-filter: blur(12px); transition: all 0.3s ease; }
-    .card-cyber:hover { border-color: rgba(88, 80, 236, 0.3); transform: translateY(-2px); }
-    .sidebar-link-active { background-color: rgba(88, 80, 236, 0.15); color: #ffffff; border-left: 3px solid #5850ec; }
-    .modal-blur { backdrop-filter: blur(16px); background: rgba(4, 2, 9, 0.85); }
+    body { 
+      background-color: #040209; 
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .text-neon-purple { text-shadow: 0 0 12px rgba(167, 139, 250, 0.6); color: #a78bfa; }
+    .text-neon-cyan { text-shadow: 0 0 12px rgba(34, 211, 238, 0.6); color: #22d3ee; }
+    
+    .card-cyber { 
+      background: linear-gradient(135deg, rgba(22, 25, 37, 0.7) 0%, rgba(13, 10, 27, 0.7) 100%); 
+      border: 1px solid rgba(88, 80, 236, 0.15); 
+      backdrop-filter: blur(16px); 
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+    }
+    .card-cyber:hover { 
+      border-color: rgba(167, 139, 250, 0.4); 
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px -10px rgba(88, 80, 236, 0.2);
+    }
+    .sidebar-link-active { 
+      background: linear-gradient(90deg, rgba(88, 80, 236, 0.2) 0%, rgba(88, 80, 236, 0.02) 100%); 
+      color: #ffffff; 
+      border-left: 4px solid #5850ec; 
+    }
+    
+    .tab-animate {
+      animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
-<body class="text-gray-300 font-sans min-h-screen box-border flex flex-col hidden" id="dashboard-body">
+<body class="text-gray-300 min-h-screen box-border flex flex-col antialiased">
 
-  <nav class="border-b border-indigo-950/40 bg-[#020204]/90 backdrop-blur-md fixed top-0 w-full z-50 px-4 sm:px-6 py-4 flex justify-between items-center box-border">
+  <div id="initial-loader" class="fixed inset-0 bg-[#040209] z-[100] flex flex-col items-center justify-center gap-4 transition-opacity duration-500">
+    <div class="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-400 rounded-full animate-spin"></div>
+    <p class="text-xs font-bold uppercase tracking-widest text-indigo-400/80 font-mono animate-pulse">Synchronisation HubForge...</p>
+  </div>
+
+  <nav class="border-b border-indigo-950/60 bg-[#020204]/90 backdrop-blur-md fixed top-0 w-full z-50 px-4 sm:px-6 py-4 flex justify-between items-center box-border">
     <div class="flex items-center gap-3">
-      <button onclick="toggleMobileSidebar()" class="md:hidden text-gray-400 hover:text-white cursor-pointer p-1">
+      <button onclick="toggleMobileSidebar()" class="md:hidden text-gray-400 hover:text-white cursor-pointer p-1 transition-colors">
         <i data-lucide="menu" class="w-6 h-6"></i>
       </button>
-      <div class="flex items-center gap-2 font-black text-lg sm:text-xl text-white tracking-wider flex-shrink-0">
-        <div class="p-2 bg-indigo-500/10 rounded-lg text-indigo-400 border border-indigo-500/20">
+      <div class="flex items-center gap-2 font-black text-xl text-white tracking-wider flex-shrink-0">
+        <div class="p-2 bg-indigo-500/10 rounded-xl text-indigo-400 border border-indigo-500/20">
           <i data-lucide="layers" class="w-5 h-5"></i>
         </div>
         HUB<span class="text-neon-purple">FORGE</span>
@@ -32,7 +65,7 @@
     </div>
 
     <div class="flex items-center gap-4">
-      <div class="hidden sm:flex items-center gap-2 bg-indigo-950/30 border border-indigo-900/40 px-3 py-1.5 rounded-xl text-xs">
+      <div class="flex items-center gap-2 bg-indigo-950/40 border border-indigo-900/50 px-3 py-1.5 rounded-xl text-xs">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
         <span class="text-gray-400 font-medium">Studio Actif</span>
       </div>
@@ -44,8 +77,8 @@
 
   <div id="sidebar-overlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden md:hidden backdrop-blur-sm"></div>
 
-  <div class="flex flex-1 pt-18 min-h-screen box-border">
-    <aside id="sidebar" class="fixed md:sticky top-18 left-0 h-[calc(100vh-4.5rem)] w-64 bg-[#020204]/95 md:bg-transparent border-r border-indigo-950/40 md:border-r-0 pt-6 px-4 box-border transition-transform duration-300 -translate-x-full md:translate-x-0 z-40 md:z-10 flex flex-col justify-between pb-6">
+  <div class="flex flex-1 pt-20 min-h-screen box-border">
+    <aside id="sidebar" class="fixed md:sticky top-20 h-[calc(100vh-5rem)] w-64 bg-[#020204]/95 md:bg-transparent border-r border-indigo-950/40 md:border-r-0 pt-6 px-4 box-border transition-transform duration-300 -translate-x-full md:translate-x-0 z-40 md:z-10 flex flex-col justify-between pb-6">
       <div class="space-y-1">
         <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-3 mb-3">Studio & Hub</p>
         <button onclick="switchTab('espace')" id="btn-tab-espace" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-xs font-semibold text-gray-400 hover:text-white hover:bg-indigo-950/20 transition-all cursor-pointer text-left border-0"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> Mon Espace (Global)</button>
@@ -64,110 +97,210 @@
     </aside>
 
     <main class="flex-1 p-4 sm:p-6 md:p-8 max-w-5xl mx-auto w-full box-border overflow-x-hidden">
-      <div id="dynamic-content" class="space-y-6"></div>
+      <div id="dynamic-content" class="space-y-6 tab-animate"></div>
     </main>
   </div>
 
-  <div id="product-modal" class="fixed inset-0 z-50 modal-blur flex items-center justify-center p-4 box-border hidden">
-    <div class="w-full max-w-3xl bg-[#0d0a1b] border border-indigo-950 rounded-2xl max-h-[90vh] overflow-y-auto flex flex-col box-border shadow-2xl relative">
-      <button onclick="closeProductModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white z-10 p-1 cursor-pointer bg-gray-950/40 border border-gray-900 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
-      <div id="modal-media-zone" class="w-full bg-black flex items-center justify-center relative min-h-[220px] sm:min-h-[340px]"></div>
-      <div class="p-6 space-y-4">
-        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
-          <div>
-            <span id="modal-badge-type" class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">TYPE</span>
-            <h2 id="modal-title" class="text-xl font-black text-white mt-1">Titre</h2>
-          </div>
-          <div id="modal-price" class="text-lg font-black text-indigo-400 sm:text-right">0.00 €</div>
-        </div>
-        <p id="modal-description" class="text-xs text-gray-400 leading-relaxed">Description...</p>
-        <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-indigo-950/50">
-          <div class="flex items-center gap-1">
-            <div class="flex text-amber-400" id="modal-stars-container"></div>
-            <span id="modal-rating-value" class="text-xs font-bold text-white ml-1">0.0</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <button onclick="alert('Ajouté aux favoris !')" class="p-2 bg-indigo-950/40 border border-indigo-900/40 rounded-xl text-gray-400 hover:text-pink-500 transition-colors cursor-pointer"><i data-lucide="heart" class="w-4 h-4"></i></button>
-            <button onclick="navigator.clipboard.writeText(window.location.href); alert('Lien copié !')" class="p-2 bg-indigo-950/40 border border-indigo-900/40 rounded-xl text-gray-400 hover:text-white transition-colors cursor-pointer"><i data-lucide="copy" class="w-4 h-4"></i></button>
-            <button onclick="alert('Signalement envoyé à l\'administrateur.')" class="px-3 py-2 bg-red-950/20 border border-red-900/30 rounded-xl text-xs font-semibold text-red-400 hover:bg-red-950/40 transition-colors cursor-pointer flex items-center gap-1"><i data-lucide="flag" class="w-3.5 h-3.5"></i> Signaler</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <template id="tpl-espace">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
-      <div>
-        <h1 class="text-2xl font-black text-white tracking-wide uppercase">Mon Espace</h1>
-        <p class="text-xs text-gray-400">Statistiques de votre réseau de vente international.</p>
-      </div>
-      <div class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-indigo-500/10 border border-indigo-500/30 text-indigo-400">Premium Plan</div>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div class="card-cyber p-5 rounded-2xl flex items-center gap-4">
-        <div class="p-3 bg-emerald-500/10 rounded-xl text-emerald-400"><i data-lucide="wallet" class="w-6 h-6"></i></div>
+    <div class="space-y-6 tab-animate">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
         <div>
-          <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Revenus nets (€)</p>
-          <h3 class="text-xl font-black text-white mt-0.5">3 450,00 €</h3>
+          <h1 class="text-2xl font-black text-white tracking-wide uppercase">Mon Espace</h1>
+          <p class="text-xs text-gray-400">Vue d'ensemble de vos revenus de vente et de vos quotas.</p>
+        </div>
+        <div class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-indigo-500/10 border border-indigo-500/30 text-indigo-400">Premium Plan</div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="card-cyber p-5 rounded-2xl flex items-center gap-4">
+          <div class="p-3 bg-emerald-500/10 rounded-xl text-emerald-400 border border-emerald-500/10"><i data-lucide="wallet" class="w-6 h-6"></i></div>
+          <div>
+            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Revenus nets (€)</p>
+            <h3 class="text-2xl font-black text-white mt-0.5">3 450,00 €</h3>
+          </div>
+        </div>
+        <div class="card-cyber p-5 rounded-2xl flex items-center gap-4">
+          <div class="p-3 bg-indigo-500/10 rounded-xl text-indigo-400 border border-indigo-500/10"><i data-lucide="package" class="w-6 h-6"></i></div>
+          <div>
+            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Catalogue Marketplace</p>
+            <h3 class="text-2xl font-black text-white mt-0.5">4 Éléments</h3>
+          </div>
+        </div>
+        <div class="card-cyber p-5 rounded-2xl flex items-center gap-4">
+          <div class="p-3 bg-amber-500/10 rounded-xl text-amber-400 border border-amber-500/10"><i data-lucide="users" class="w-6 h-6"></i></div>
+          <div>
+            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Téléchargements</p>
+            <h3 class="text-2xl font-black text-white mt-0.5">1 420</h3>
+          </div>
         </div>
       </div>
-      <div class="card-cyber p-5 rounded-2xl flex items-center gap-4">
-        <div class="p-3 bg-indigo-500/10 rounded-xl text-indigo-400"><i data-lucide="package" class="w-6 h-6"></i></div>
-        <div>
-          <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Catalogue Marketplace</p>
-          <h3 class="text-xl font-black text-white mt-0.5">4 Éléments</h3>
+
+      <div class="card-cyber p-6 rounded-2xl space-y-4">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-2">
+            <i data-lucide="database" class="w-4 h-4 text-indigo-400"></i>
+            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Stockage Objets & Build Cloud</h3>
+          </div>
+          <span class="text-xs text-gray-400 font-mono">0.8 Go / 5.0 Go (16%)</span>
+        </div>
+        <div class="w-full bg-gray-950 rounded-full h-2 overflow-hidden border border-indigo-950/50">
+          <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-full rounded-full" style="width: 16%"></div>
         </div>
       </div>
-      <div class="card-cyber p-5 rounded-2xl flex items-center gap-4">
-        <div class="p-3 bg-amber-500/10 rounded-xl text-amber-400"><i data-lucide="database" class="w-6 h-6"></i></div>
-        <div>
-          <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Consommation Objets</p>
-          <h3 class="text-xl font-black text-white mt-0.5">0.8 / 5.0 Go</h3>
+
+      <div class="card-cyber p-5 rounded-2xl space-y-4">
+        <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2"><i data-lucide="history" class="w-4 h-4 text-emerald-400"></i> Historique d'activité du compte</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-indigo-950/60 text-gray-500 uppercase text-[10px] tracking-wider">
+                <th class="pb-3 font-semibold">Événement</th>
+                <th class="pb-3 font-semibold">Type</th>
+                <th class="pb-3 font-semibold">Date / Statut</th>
+                <th class="pb-3 font-semibold text-right">Montant</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-indigo-950/30 text-gray-300">
+              <tr>
+                <td class="py-3 font-medium text-white">Achat - Pack Textures Cyber-Neon v4</td>
+                <td class="py-3 text-purple-400 font-mono">Asset Store</td>
+                <td class="py-3 text-gray-500">Aujourd'hui, 10:12 <span class="ml-2 bg-emerald-500/10 text-emerald-400 text-[9px] px-1.5 py-0.5 rounded">Complété</span></td>
+                <td class="py-3 text-right font-bold text-white">+15.00 €</td>
+              </tr>
+              <tr>
+                <td class="py-3 font-medium text-white">Déploiement Build Web / Supabase Auth</td>
+                <td class="py-3 text-indigo-400 font-mono">Hosting</td>
+                <td class="py-3 text-gray-500">Hier, 18:45 <span class="ml-2 bg-indigo-500/10 text-indigo-400 text-[9px] px-1.5 py-0.5 rounded">Succès</span></td>
+                <td class="py-3 text-right font-mono text-gray-500">--</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
   </template>
 
   <template id="tpl-produits">
-    <div class="space-y-4">
-      <div><h1 class="text-2xl font-black text-white tracking-wide uppercase">Marketplace HubForge</h1></div>
-      <div class="card-cyber p-4 rounded-xl grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-        <div>
-          <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Format</label>
-          <select class="w-full bg-[#161925] border border-indigo-950/60 rounded-xl p-2.5 text-white"><option value="all">Tous les types</option></select>
+    <div class="space-y-6 tab-animate">
+      <div>
+        <h1 class="text-2xl font-black text-white tracking-wide uppercase">Marketplace HubForge</h1>
+        <p class="text-xs text-gray-400">Accès direct aux modules de streaming, masterclasses et ressources 3D.</p>
+      </div>
+
+      <div class="card-cyber rounded-2xl overflow-hidden border border-indigo-500/20 shadow-xl">
+        <div class="w-full bg-gradient-to-br from-purple-950/40 to-black h-56 sm:h-72 flex flex-col items-center justify-center relative border-b border-indigo-950/60 p-6 text-center">
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(88,80,236,0.15),transparent_70%)]"></div>
+          <div class="w-14 h-14 bg-indigo-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 cursor-pointer hover:scale-110 transition-transform mb-3">
+            <i data-lucide="play" class="w-6 h-6 fill-current ml-0.5"></i>
+          </div>
+          <span class="text-[10px] font-mono tracking-widest uppercase text-indigo-400 bg-indigo-950/60 px-3 py-1 rounded-full border border-indigo-900/40 backdrop-blur-sm animate-pulse">Lecteur Flux Cyber Sécurisé Actif</span>
         </div>
-        <div>
-          <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tarification</label>
-          <select class="w-full bg-[#161925] border border-indigo-950/60 rounded-xl p-2.5 text-white"><option value="all">Tout voir</option></select>
-        </div>
-        <div>
-          <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Trier par</label>
-          <select class="w-full bg-[#161925] border border-indigo-950/60 rounded-xl p-2.5 text-white"><option value="rating">Meilleures notes (★)</option></select>
-        </div>
-        <div class="col-span-2 sm:col-span-1 flex items-end">
-          <button class="w-full bg-indigo-600 text-white font-bold py-2.5 px-4 rounded-xl uppercase text-[10px]">Filtrer</button>
+        
+        <div class="p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+            <div>
+              <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Vidéo / Stream / Tutos</span>
+              <h2 class="text-xl font-extrabold text-white mt-1">Masterclass Game Dev Horror : Systèmes Avancés TPS</h2>
+            </div>
+            <div class="text-xl font-black text-neon-purple shrink-0">29.00 €</div>
+          </div>
+          <p class="text-xs text-gray-400 leading-relaxed max-w-3xl">
+            Conception de mécaniques de détection IA complexes, systèmes de couverture dynamique et gestion de lampe torche volumétrique sous Godot 4 et Unity 6. Comprend 12 heures de vidéo 4K et les projets sources complets.
+          </p>
+          <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-indigo-950/50">
+            <div class="flex items-center gap-1.5 text-xs">
+              <div class="flex text-amber-400"><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i></div>
+              <span class="font-bold text-white ml-1">5.0</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="alert('Lancement du streaming sécurisé...')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all uppercase tracking-wider flex items-center gap-2 cursor-pointer"><i data-lucide="clapperboard" class="w-4 h-4"></i> Visionner le contenu</button>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div class="card-cyber p-5 rounded-2xl flex flex-col justify-between cursor-pointer" onclick="openProductModal('video')">
-          <div><h4 class="text-sm font-bold text-white flex items-center gap-1.5"><i data-lucide="video" class="w-4 h-4 text-indigo-400"></i> Masterclass Game Dev Horror</h4></div>
+
+      <div class="card-cyber rounded-2xl overflow-hidden border border-purple-500/10 shadow-xl">
+        <div class="w-full bg-[#0a0714] h-56 sm:h-72 flex flex-col items-center justify-center relative border-b border-indigo-950/60 p-6 text-center">
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(167,139,250,0.1),transparent_70%)]"></div>
+          <div class="grid grid-cols-3 gap-2 max-w-md w-full opacity-60">
+            <div class="bg-indigo-950/40 border border-indigo-800/20 aspect-square rounded-xl flex items-center justify-center text-indigo-400/50 text-[10px] font-mono">Albedo.png</div>
+            <div class="bg-indigo-950/40 border border-indigo-800/20 aspect-square rounded-xl flex items-center justify-center text-purple-400/50 text-[10px] font-mono">Normal.png</div>
+            <div class="bg-indigo-950/40 border border-indigo-800/20 aspect-square rounded-xl flex items-center justify-center text-cyan-400/50 text-[10px] font-mono">Rough.png</div>
+          </div>
+          <div class="absolute mt-2 bg-purple-950/60 text-purple-300 text-[10px] px-3 py-1 rounded-full border border-purple-900/40 font-mono backdrop-blur-sm">Aperçu Matériaux PBR Actif</div>
         </div>
-        <div class="card-cyber p-5 rounded-2xl flex flex-col justify-between cursor-pointer" onclick="openProductModal('photo')">
-          <div><h4 class="text-sm font-bold text-white flex items-center gap-1.5"><i data-lucide="image" class="w-4 h-4 text-purple-400"></i> Pack Textures Cyber-Neon v4</h4></div>
+        
+        <div class="p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+            <div>
+              <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">Asset Graphique / Matériaux</span>
+              <h2 class="text-xl font-extrabold text-white mt-1">Pack Textures Cyber-Neon v4 (Résolution 4K PBR)</h2>
+            </div>
+            <div class="text-xl font-black text-neon-cyan shrink-0">15.00 €</div>
+          </div>
+          <p class="text-xs text-gray-400 leading-relaxed max-w-3xl">
+            Donnez une esthétique cyberpunk et industrielle sombre à vos environnements. Inclus plus de 45 textures fluides et transparentes (Seamless) pré-configurées.
+          </p>
+          <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-indigo-950/50">
+            <div class="flex items-center gap-1.5 text-xs">
+              <div class="flex text-amber-400"><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4"></i></div>
+              <span class="font-bold text-white ml-1">4.2</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="alert('Téléchargement du fichier ZIP lancé !')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all uppercase tracking-wider flex items-center gap-2 cursor-pointer"><i data-lucide="download" class="w-4 h-4"></i> Télécharger le ZIP</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </template>
 
   <template id="tpl-news">
-    <div class="card-cyber p-5 rounded-2xl space-y-2">
-      <h3 class="text-sm font-bold text-white">Lancement Multi-Formats</h3>
-      <p class="text-xs text-gray-400">Toutes les valeurs de devises sont fixées en Euros (€).</p>
+    <div class="space-y-6 tab-animate">
+      <div>
+        <h1 class="text-2xl font-black text-white tracking-wide uppercase">Actualités Admin</h1>
+        <p class="text-xs text-gray-400">Notes de mise à jour et annonces globales du réseau.</p>
+      </div>
+
+      <div class="card-cyber p-6 rounded-2xl space-y-4">
+        <div class="flex items-center justify-between">
+          <span class="bg-indigo-500/10 text-indigo-400 text-[10px] font-bold px-2 py-1 rounded border border-indigo-500/20 uppercase tracking-widest">Mise à jour v1.4.0</span>
+          <span class="text-xs text-gray-500 font-mono">06 Juillet 2026</span>
+        </div>
+        <h3 class="text-lg font-extrabold text-white">Lancement de la facturation internationale</h3>
+        <p class="text-xs text-gray-400 leading-relaxed">
+          Toutes les valeurs de devises de vos clients internationaux sont maintenant automatiquement calculées et affichées en Euros (€) pour simplifier vos retraits cloud.
+        </p>
+      </div>
     </div>
   </template>
+
   <template id="tpl-settings">
-    <div class="card-cyber p-6 rounded-2xl"><h3 class="text-sm font-bold text-white uppercase">Configuration Store</h3></div>
+    <div class="space-y-6 tab-animate">
+      <div>
+        <h1 class="text-2xl font-black text-white tracking-wide uppercase">Configuration Store</h1>
+        <p class="text-xs text-gray-400">Paramétrez le style visuel de votre profil public.</p>
+      </div>
+
+      <div class="card-cyber p-6 rounded-2xl space-y-5">
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider border-b border-indigo-950 pb-2">Identité Globale du Hub</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div class="space-y-1">
+            <label class="block font-bold text-gray-400 uppercase text-[10px]">Nom Unique du Studio</label>
+            <input type="text" value="Forge Studios Global" class="w-full bg-gray-950 border border-indigo-950/80 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500 transition-colors">
+          </div>
+          <div class="space-y-1">
+            <label class="block font-bold text-gray-400 uppercase text-[10px]">Devise par défaut</label>
+            <select class="w-full bg-gray-950 border border-indigo-950/80 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500 transition-colors">
+              <option value="eur">Euro (€) - Recommandé</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex justify-end pt-2">
+          <button onclick="alert('Configuration sauvegardée !')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-5 py-3 rounded-xl transition-all uppercase tracking-widest cursor-pointer">Sauvegarder</button>
+        </div>
+      </div>
+    </div>
   </template>
 
   <script>
@@ -181,26 +314,34 @@
       console.log("Auth Event:", event, "Session active:", !!session);
 
       if (session) {
-        // Session détectée (Authentifié ou redirection d'email réussie)
-        document.getElementById('dashboard-body').classList.remove('hidden');
+        // L'utilisateur est authentifié avec succès
+        
+        // 1. Masquer l'écran de chargement initial proprement
+        const loader = document.getElementById('initial-loader');
+        if (loader) {
+          loader.classList.add('opacity-0');
+          setTimeout(() => loader.remove(), 500); // Supprime l'élément après l'effet de fade
+        }
+
+        // 2. Injecter les informations utilisateur réelles dans la barre latérale
         document.getElementById('user-display-email').innerText = session.user.email;
         document.getElementById('user-display-id').innerText = `ID: ${session.user.id.substring(0, 8)}`;
         
-        // Initialise le premier onglet si l'espace est vide
+        // 3. Initialiser le premier onglet principal si la zone est vide
         if (!document.getElementById('dynamic-content').innerHTML.trim()) {
           switchTab('espace');
         }
       } else {
-        // Si aucun jeton n'est capturé après traitement, retour vers la connexion
+        // Si aucun jeton n'est détecté après analyse complète, redirection immédiate vers l'auth
         setTimeout(() => {
           if (!session) {
             window.location.href = "auth.html";
           }
-        }, 500);
+        }, 800);
       }
     });
 
-    // Gestion de la Déconnexion
+    // Gestion réelle de la Déconnexion Supabase
     async function handleLogout() {
       await supabaseClient.auth.signOut();
       window.location.href = "auth.html";
@@ -226,32 +367,13 @@
       if (window.innerWidth < 768) toggleMobileSidebar(true);
     }
 
-    // Modale Produits (Mock Data)
-    const productDataMock = {
-      video: { title: "Masterclass Game Dev Horror", type: "Vidéo / Stream", price: "29.00 €", description: "TPS horror content flow.", rating: "5.0", stars: "★★★★★", mediaHtml: `<div class="p-6 text-xs text-white">Lecteur Cyber Securise Actif</div>` },
-      photo: { title: "Pack Textures Cyber-Neon v4", type: "Asset Graphique", price: "15.00 €", description: "Esthétique violette.", rating: "4.2", stars: "★★★★☆", mediaHtml: `<div class="p-6 text-xs text-white">Aperçu Galerie</div>` }
-    };
-
-    function openProductModal(productId) {
-      const data = productDataMock[productId];
-      if (!data) return;
-      document.getElementById('modal-title').innerText = data.title;
-      document.getElementById('modal-badge-type').innerText = data.type;
-      document.getElementById('modal-price').innerText = data.price;
-      document.getElementById('modal-description').innerText = data.description;
-      document.getElementById('modal-rating-value').innerText = data.rating;
-      document.getElementById('modal-stars-container').innerText = data.stars;
-      document.getElementById('modal-media-zone').innerHTML = data.mediaHtml;
-      document.getElementById('product-modal').classList.remove('hidden');
-      lucide.createIcons();
-    }
-
-    function closeProductModal() { document.getElementById('product-modal').classList.add('hidden'); }
+    // Gestion de la sidebar responsive (Mobile)
     function toggleMobileSidebar(forceClose = null) {
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebar-overlay');
       const isOpen = !sidebar.classList.contains('-translate-x-full');
       const shouldClose = forceClose !== null ? forceClose : isOpen;
+      
       sidebar.classList.toggle('-translate-x-full', shouldClose);
       overlay.classList.toggle('hidden', shouldClose);
     }
