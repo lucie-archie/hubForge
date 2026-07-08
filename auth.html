@@ -3,254 +3,459 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HubForge - Authentification Premium</title>
+  <title>HubForge - Authentification</title>
   
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <style>
-    body { 
-      background-color: #030107; 
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-    .text-neon-purple { text-shadow: 0 0 12px rgba(167, 139, 250, 0.6); color: #a78bfa; }
-    
-    .card-cyber { 
-      background: linear-gradient(135deg, rgba(20, 17, 33, 0.7) 0%, rgba(10, 7, 20, 0.7) 100%); 
-      border: 1px solid rgba(167, 139, 250, 0.1); 
-      backdrop-filter: blur(16px); 
-    }
-    
-    .input-cyber {
-      background-color: rgba(5, 3, 10, 0.6);
-      border: 1px solid rgba(167, 139, 250, 0.15);
-      transition: all 0.3s ease;
-    }
-    .input-cyber:focus {
-      border-color: #a78bfa;
-      box-shadow: 0 0 15px rgba(167, 139, 250, 0.15);
-      background-color: rgba(5, 3, 10, 0.9);
-    }
-
-    .animate-slide {
-      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
-
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer></script>
   <script src="https://unpkg.com/lucide@latest" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    :root {
+      --bg-main: #05050e;
+      --bg-card: #0c0c16;
+      --bg-input: #141423;
+      --border: #1e1e38;
+      --text-main: #f8fafc;
+      --text-muted: #64748b;
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --error: #ef4444;
+      --success: #22c55e;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 400px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 28px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .progress-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      background-size: 200% 100%;
+      display: none;
+      animation: shift-load 1.5s infinite linear;
+    }
+
+    @keyframes shift-load {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin-bottom: 24px;
+    }
+
+    .brand span {
+      font-weight: 300;
+      color: var(--text-muted);
+    }
+
+    /* Bandeau d'alerte supérieur */
+    .alert-banner {
+      display: none;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.4;
+      margin-bottom: 24px;
+      border: 1px solid transparent;
+    }
+
+    .alert-banner.error {
+      background-color: rgba(239, 68, 68, 0.08);
+      border-color: rgba(239, 68, 68, 0.25);
+      color: var(--error);
+    }
+
+    .alert-banner.success {
+      background-color: rgba(34, 197, 94, 0.08);
+      border-color: rgba(34, 197, 94, 0.25);
+      color: var(--success);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .label-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .label-icon {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+    }
+
+    label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .forgot-link {
+      font-size: 11px;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    input {
+      width: 100%;
+      background-color: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      border-radius: 12px;
+      padding: 14px 16px; 
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+
+    .field-status {
+      font-size: 12px;
+      margin-top: 6px;
+      font-weight: 500;
+      display: block;
+      color: var(--text-muted);
+    }
+
+    .field-status.invalid { color: var(--error); }
+    .field-status.valid { color: var(--success); }
+
+    .submit-btn {
+      width: 100%;
+      background-color: var(--accent);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      display: none;
+      animation: spin 0.8s infinite linear;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .switch-mode {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .switch-mode toggle {
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 600;
+    }
+  </style>
 </head>
-<body class="text-gray-300 min-h-screen flex items-center justify-center p-4 sm:p-6 relative overflow-hidden antialiased">
+<body>
 
-  <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-900/10 rounded-full blur-[120px] pointer-events-none"></div>
-
-  <div class="w-full max-w-md card-cyber rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative z-10 border border-purple-950/40 animate-slide overflow-hidden">
+  <div class="auth-card">
+    <div id="loading-bar" class="progress-bar"></div>
     
-    <div id="auth-progress-bar" class="absolute top-0 left-0 h-1 bg-gradient-to-r from-purple-500 to-indigo-400 w-0 transition-all duration-500 ease-out"></div>
-    
-    <div class="text-center space-y-2">
-      <div class="inline-flex p-3 bg-purple-500/10 rounded-2xl text-purple-400 border border-purple-500/20 mb-1">
-        <i data-lucide="layers" class="w-6 h-6"></i>
-      </div>
-      <h1 class="text-xl font-black text-white tracking-wider">HUB<span class="text-neon-purple">FORGE</span></h1>
-      <p id="auth-subtitle" class="text-xs text-gray-400">Accédez à votre espace studio de création.</p>
+    <div class="brand">
+      <i data-lucide="layers" style="width: 22px; height: 22px; color: var(--accent);"></i>
+      HUB<span>FORGE</span>
     </div>
 
-    <div id="auth-alert" class="hidden p-3.5 rounded-xl text-xs font-medium border flex items-start gap-2.5 transition-all duration-300">
-      <i id="auth-alert-icon" data-lucide="alert-circle" class="w-4 h-4 shrink-0 mt-0.5"></i>
-      <span id="auth-alert-text" class="leading-relaxed"></span>
+    <div id="global-alert" class="alert-banner error">
+      <i id="alert-icon" data-lucide="alert-circle" style="width: 18px; height: 18px; flex-shrink: 0;"></i>
+      <span id="alert-text"></span>
     </div>
 
-    <div id="auth-tabs" class="flex bg-purple-950/20 p-1 rounded-xl border border-purple-900/20 text-xs font-semibold">
-      <button id="tab-login" onclick="toggleAuthMode('login')" class="flex-1 py-2.5 text-white bg-purple-500/10 rounded-lg transition-all border-0 cursor-pointer">Connexion</button>
-      <button id="tab-register" onclick="toggleAuthMode('register')" class="flex-1 py-2.5 text-gray-400 hover:text-white rounded-lg transition-all border-0 cursor-pointer">Inscription</button>
-    </div>
-
-    <form id="auth-form" onsubmit="handleSubmit(event)" class="space-y-4">
-      <div class="space-y-1.5">
-        <label class="block font-bold text-gray-400 uppercase text-[10px] tracking-wider">Adresse Email</label>
-        <div class="relative">
-          <i data-lucide="mail" class="w-4 h-4 text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-          <input type="email" id="auth-email" required placeholder="nom@exemple.com" class="w-full input-cyber rounded-xl pl-10 pr-4 py-3 text-xs text-white outline-none">
+    <form id="auth-form" onsubmit="handleAuthSubmit(event)" novalidate>
+      
+      <div class="form-group">
+        <div class="label-row">
+          <div class="label-container">
+            <span class="label-icon"><i data-lucide="mail" style="width: 13px; height: 13px;"></i></span>
+            <label for="email">Adresse E-mail</label>
+          </div>
         </div>
+        <input type="email" id="email" placeholder="nom@exemple.com" oninput="validateForm()" required>
+        <p id="email-status" class="field-status">En attente de saisie...</p>
       </div>
 
-      <div class="space-y-1.5">
-        <label class="block font-bold text-gray-400 uppercase text-[10px] tracking-wider">Mot de passe</label>
-        <div class="relative">
-          <i data-lucide="lock" class="w-4 h-4 text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-          <input type="password" id="auth-password" required placeholder="••••••••" class="w-full input-cyber rounded-xl pl-10 pr-4 py-3 text-xs text-white outline-none">
+      <div class="form-group">
+        <div class="label-row">
+          <div class="label-container">
+            <span class="label-icon"><i data-lucide="lock" style="width: 13px; height: 13px;"></i></span>
+            <label for="password">Mot de passe</label>
+          </div>
+          <a href="reset-password.html" id="forgot-password-link" class="forgot-link">Oublié ?</a>
         </div>
+        <input type="password" id="password" placeholder="••••••••••••" oninput="validateForm()" required>
+        <p id="password-status" class="field-status">En attente de saisie...</p>
       </div>
 
-      <button type="submit" id="auth-submit-btn" class="w-full py-3 bg-purple-600 hover:bg-purple-500 disabled:bg-purple-800/40 disabled:text-gray-500 disabled:cursor-not-allowed text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-purple-950/50 cursor-pointer border-0 flex items-center justify-center gap-2 mt-2">
-        <span id="btn-icon-container" class="flex items-center justify-center">
-          <i data-lucide="log-in" class="w-4 h-4"></i>
-        </span> 
-        <span id="auth-btn-text">Se connecter</span>
+      <button type="submit" id="submit-btn" class="submit-btn">
+        <div class="spinner" id="btn-spinner"></div>
+        <span id="btn-text">Se connecter</span>
       </button>
     </form>
 
+    <div class="switch-mode">
+      <span id="switch-text">Nouveau sur la plateforme ?</span>
+      <toggle id="switch-btn" onclick="toggleMode()">Créer un compte</toggle>
+    </div>
   </div>
 
   <script>
     let supabaseClient = null;
-    let currentMode = 'login';
+    let isSignUpMode = false;
 
-    // Sécurité DOM + CDN
     window.addEventListener('load', () => {
       if (typeof supabase !== 'undefined') {
-        const SUPABASE_URL = "https://oxasbndvpexofwrekyun.supabase.co"; 
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94YXNibmR2cGV4b2Z3cmVreXVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTg3MTI3MjUsImV4cCI6MjAzNDI4ODcyNX0.4X8rM_Y1Z_1X5O-5U2N_4N_1X5O-5U2N_4N_1X5O-5U"; 
+        const SUPABASE_URL = "https://ksqgxnfvqvyseivwzgaf.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_CVVb_9oBaayoatvTLmLDbg_xVlNP3he";
         supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       }
-      if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-      }
+      if (typeof lucide !== 'undefined') lucide.createIcons();
     });
 
-    function toggleAuthMode(mode) {
-      const submitBtn = document.getElementById('auth-submit-btn');
-      if (submitBtn && submitBtn.disabled) return;
+    function toggleMode() {
+      isSignUpMode = !isSignUpMode;
+      document.getElementById('global-alert').style.display = 'none';
       
-      currentMode = mode;
-      hideAlert();
+      const btnText = document.getElementById('btn-text');
+      const switchText = document.getElementById('switch-text');
+      const switchBtn = document.getElementById('switch-btn');
+      const forgotLink = document.getElementById('forgot-password-link');
 
-      const isLogin = mode === 'login';
-      
-      document.getElementById('tab-login').className = `flex-1 py-2.5 transition-all border-0 cursor-pointer rounded-lg ${isLogin ? 'text-white bg-purple-500/10' : 'text-gray-400 hover:text-white'}`;
-      document.getElementById('tab-register').className = `flex-1 py-2.5 transition-all border-0 cursor-pointer rounded-lg ${!isLogin ? 'text-white bg-purple-500/10' : 'text-gray-400 hover:text-white'}`;
-      
-      document.getElementById('auth-subtitle').innerText = isLogin ? "Accédez à votre espace studio de création." : "Créez votre profil de créateur pour rejoindre le réseau.";
-      document.getElementById('auth-btn-text').innerText = isLogin ? "Se connecter" : "Créer mon compte";
-      
-      const iconContainer = document.getElementById('btn-icon-container');
-      if (iconContainer) {
-        iconContainer.innerHTML = `<i data-lucide="${isLogin ? 'log-in' : 'user-plus'}" class="w-4 h-4"></i>`;
-      }
-      
-      if (typeof lucide !== 'undefined') lucide.createIcons();
-    }
-
-    function showAlert(rawMessage, status = 'error') {
-      const alertBox = document.getElementById('auth-alert');
-      const alertText = document.getElementById('auth-alert-text');
-      const alertIcon = document.getElementById('auth-alert-icon');
-
-      let processedMessage = rawMessage;
-      
-      if (status === 'error') {
-        if (rawMessage.includes('Invalid login credentials') || rawMessage.toLowerCase().includes('invalid credentials')) {
-          processedMessage = "Adresse email ou mot de passe incorrect. Veuillez vérifier vos accès.";
-        } else if (rawMessage.includes('Failed to fetch') || rawMessage.includes('TypeError') || rawMessage.includes('NetworkError')) {
-          processedMessage = "Serveur distant inaccessible en local. Veuillez pousser sur GitHub Pages pour valider la connexion.";
-        } else if (rawMessage.includes('email rate limit exceeded') || rawMessage.includes('rate limit')) {
-          processedMessage = "Trop de tentatives. Veuillez patienter quelques minutes.";
-        } else if (rawMessage.includes('User already exists')) {
-          processedMessage = "Cette adresse email est déjà enregistrée.";
-        }
-        
-        if (alertBox) alertBox.className = "p-3.5 rounded-xl text-xs font-medium border flex items-start gap-2.5 bg-red-500/5 border-red-500/20 text-red-400 animate-slide";
-        if (alertIcon) alertIcon.setAttribute('data-lucide', 'alert-circle');
+      if (isSignUpMode) {
+        btnText.innerText = "Créer un compte";
+        switchText.innerText = "Vous avez déjà un compte ?";
+        switchBtn.innerText = "Se connecter";
+        forgotLink.style.display = "none";
       } else {
-        if (alertBox) alertBox.className = "p-3.5 rounded-xl text-xs font-medium border flex items-start gap-2.5 bg-emerald-500/5 border-emerald-500/20 text-emerald-400 animate-slide";
-        if (alertIcon) alertIcon.setAttribute('data-lucide', 'check-circle');
+        btnText.innerText = "Se connecter";
+        switchText.innerText = "Nouveau sur la plateforme ?";
+        switchBtn.innerText = "Créer un compte";
+        forgotLink.style.display = "block";
       }
-
-      if (alertText) alertText.innerText = processedMessage;
-      if (typeof lucide !== 'undefined') lucide.createIcons();
+      validateForm();
     }
 
-    function hideAlert() {
-      const alertBox = document.getElementById('auth-alert');
-      if (alertBox) alertBox.classList.add('hidden');
-    }
-
-    async function handleSubmit(event) {
-      event.preventDefault();
-      hideAlert();
-
-      if (!supabaseClient) {
-        showAlert("Le client de sécurité n'est pas encore prêt. Veuillez rafraîchir.");
-        return;
-      }
-
-      const email = document.getElementById('auth-email').value.trim();
-      const password = document.getElementById('auth-password').value;
+    function validateForm() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const emailStatus = document.getElementById('email-status');
+      const passwordStatus = document.getElementById('password-status');
       
-      const submitBtn = document.getElementById('auth-submit-btn');
-      const btnText = document.getElementById('auth-btn-text');
-      const iconContainer = document.getElementById('btn-icon-container');
-      const progressBar = document.getElementById('auth-progress-bar');
-      const tabsContainer = document.getElementById('auth-tabs');
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      let isValid = true;
+
+      if (!email) {
+        emailStatus.innerText = "L'adresse e-mail est requise.";
+        emailStatus.className = "field-status invalid";
+        isValid = false;
+      } else if (!emailRegex.test(email)) {
+        emailStatus.innerText = "Format d'adresse e-mail incorrect.";
+        emailStatus.className = "field-status invalid";
+        isValid = false;
+      } else {
+        emailStatus.innerText = "Format d'adresse e-mail valide.";
+        emailStatus.className = "field-status valid";
+      }
+
+      if (!password) {
+        passwordStatus.innerText = "Le mot de passe est requis.";
+        passwordStatus.className = "field-status invalid";
+        isValid = false;
+      } else if (password.length < 6) {
+        passwordStatus.innerText = "Le mot de passe doit contenir au moins 6 caractères.";
+        passwordStatus.className = "field-status invalid";
+        isValid = false;
+      } else {
+        passwordStatus.innerText = "Longueur de mot de passe valide.";
+        passwordStatus.className = "field-status valid";
+      }
+
+      return isValid;
+    }
+
+    // Affiche une erreur rouge professionnelle
+    function showProfessionalError(rawMessage) {
+      const banner = document.getElementById('global-alert');
+      const textSpan = document.getElementById('alert-text');
+      const icon = document.getElementById('alert-icon');
+      if (!banner) return;
+
+      banner.className = "alert-banner error";
+      icon.setAttribute('data-lucide', 'alert-circle');
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+
+      let msgLower = rawMessage.toLowerCase();
+      let localizedMessage = "Une erreur est survenue. Veuillez vérifier vos informations.";
+
+      if (msgLower.includes("invalid login credentials")) {
+        localizedMessage = "L'adresse e-mail ou le mot de passe est incorrect.";
+      } else if (msgLower.includes("user already exists")) {
+        localizedMessage = "Cette adresse e-mail est déjà associée à un compte hubForge.";
+      } else if (msgLower.includes("rate limit")) {
+        localizedMessage = "Trop de tentatives consécutives. Par sécurité, veuillez patienter un instant.";
+      } else if (rawMessage.includes('Failed to fetch') || rawMessage.includes('NetworkError')) {
+        localizedMessage = "Connexion réseau impossible. Vérifiez votre accès Internet.";
+      }
+
+      textSpan.innerText = localizedMessage;
+      banner.style.display = 'flex';
+    }
+
+    // Affiche un succès vert premium sans utiliser de alert()
+    function showProfessionalSuccess(message) {
+      const banner = document.getElementById('global-alert');
+      const textSpan = document.getElementById('alert-text');
+      const icon = document.getElementById('alert-icon');
+      if (!banner) return;
+
+      banner.className = "alert-banner success";
+      icon.setAttribute('data-lucide', 'check-circle');
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+
+      textSpan.innerText = message;
+      banner.style.display = 'flex';
+    }
+
+    async function handleAuthSubmit(event) {
+      event.preventDefault();
+      document.getElementById('global-alert').style.display = 'none';
+
+      if (!validateForm()) return;
+      if (!supabaseClient) return;
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      
+      const submitBtn = document.getElementById('submit-btn');
+      const spinner = document.getElementById('btn-spinner');
+      const btnText = document.getElementById('btn-text');
+      const loadingBar = document.getElementById('loading-bar');
 
       submitBtn.disabled = true;
-      document.getElementById('auth-email').disabled = true;
-      document.getElementById('auth-password').disabled = true;
-      if (tabsContainer) {
-        tabsContainer.style.opacity = "0.5";
-        tabsContainer.style.pointerEvents = "none";
-      }
-
-      if (iconContainer) iconContainer.innerHTML = `<div class="w-3.5 h-3.5 border-2 border-t-transparent border-white rounded-full animate-spin"></div>`;
-      if (btnText) btnText.innerText = currentMode === 'login' ? "Vérification..." : "Inscription...";
-      if (progressBar) progressBar.style.width = "60%";
+      spinner.style.display = 'block';
+      loadingBar.style.display = 'block';
+      const originalText = btnText.innerText;
+      btnText.innerText = "Traitement...";
 
       try {
-        let result;
-        if (currentMode === 'login') {
-          result = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (isSignUpMode) {
+          // --- 🔍 VÉRIFICATION : Consultation du registre public ---
+          const { data: existingUser, error: searchError } = await supabaseClient
+            .from('registered_emails')
+            .select('email')
+            .eq('email', email)
+            .maybeSingle();
+
+          if (searchError) throw new Error("network_error");
+
+          // Si l'e-mail existe déjà dans notre registre, on bloque directement
+          if (existingUser) {
+            showProfessionalError("User already exists");
+            return;
+          }
+
+          // --- INSCRIPTION SÉCURISÉE ---
+          const { data, error } = await supabaseClient.auth.signUp({ email, password });
+          if (error) throw error;
+          
+          showProfessionalSuccess("Inscription réussie ! Veuillez vérifier votre boîte e-mail pour confirmer votre compte.");
+          toggleMode(); 
         } else {
-          result = await supabaseClient.auth.signUp({ email, password });
+          // --- CONNEXION ---
+          const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+          
+          window.location.href = "dashboard.html";
         }
-
-        if (result.error) throw result.error;
-
-        if (progressBar) progressBar.style.width = "100%";
-        
-        if (currentMode === 'login') {
-          showAlert("Authentification réussie !", "success");
-          setTimeout(() => {
-            window.location.href = "dashboard.html";
-          }, 800);
-        } else {
-          showAlert("Inscription validée ! Regardez vos e-mails.", "success");
-          resetFormState();
-        }
-
       } catch (err) {
-        resetFormState();
-        showAlert(err.message || err.toString(), 'error');
+        if (err.message === "network_error") {
+          showProfessionalError("Connexion réseau impossible. Vérifiez votre accès Internet.");
+        } else {
+          showProfessionalError(err.message || err.toString());
+        }
+      } finally {
+        submitBtn.disabled = false;
+        spinner.style.display = 'none';
+        loadingBar.style.display = 'none';
+        btnText.innerText = originalText;
       }
-    }
-
-    function resetFormState() {
-      const submitBtn = document.getElementById('auth-submit-btn');
-      const btnText = document.getElementById('auth-btn-text');
-      const iconContainer = document.getElementById('btn-icon-container');
-      const progressBar = document.getElementById('auth-progress-bar');
-      const tabsContainer = document.getElementById('auth-tabs');
-
-      if (submitBtn) submitBtn.disabled = false;
-      document.getElementById('auth-email').disabled = false;
-      document.getElementById('auth-password').disabled = false;
-      if (tabsContainer) {
-        tabsContainer.style.opacity = "1";
-        tabsContainer.style.pointerEvents = "auto";
-      }
-      if (progressBar) progressBar.style.width = "0";
-      
-      if (iconContainer) {
-        iconContainer.innerHTML = `<i data-lucide="${currentMode === 'login' ? 'log-in' : 'user-plus'}" class="w-4 h-4"></i>`;
-      }
-      if (btnText) btnText.innerText = currentMode === 'login' ? "Se connecter" : "Créer mon compte";
-      if (typeof lucide !== 'undefined') lucide.createIcons();
     }
   </script>
 </body>
