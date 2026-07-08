@@ -1,13 +1,27 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=main.html">
-    <title>HubForge</title>
-    <script>
-        window.location.href = "main.html";
-    </script>
+  <meta charset="UTF-8">
+  <title>HubForge</title>
+  <script>
+    (function() {
+      // 1. On analyse ce qu'il y a après le caractère '#' dans l'URL
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      
+      // 2. On vérifie si c'est un flux de récupération de mot de passe (recovery)
+      const isPasswordReset = hashParams.get('type') === 'recovery';
+
+      if (isPasswordReset) {
+        // Extraire le token et reconstruire l'URL proprement vers update-password.html
+        const accessToken = hashParams.get('access_token');
+        window.location.replace(`update-password.html#access_token=${accessToken}&type=recovery`);
+      } else {
+        // 3. Si c'est un visiteur normal, redirection classique vers main.html
+        window.location.replace("main.html");
+      }
+    })();
+  </script>
 </head>
-<body style="background: #020204;">
+<body style="background: #04040a;">
 </body>
 </html>
